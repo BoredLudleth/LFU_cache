@@ -1,29 +1,66 @@
 #include "lfu_cache.hpp"
+#include "perfect_cache.hpp"
+
+#include <time.h>
+#include <string>
 
 int main () {
-    int m;          //size
-    int n;          //number of pages
+    std::string test_head;
+    std::cin >> test_head;
+    FILE* logs = fopen ("../logs/log1.txt", "a+");
+
+    fprintf (logs, "==============================================\n");
+    fprintf (logs, (test_head + "\n").c_str());
+
+
+
+    unsigned int start_preparation = clock ();
+    size_t m;          //size
+    size_t n;          //number of pages
     
     std::cin >> m >> n;
-
     cache_t<int, int> c{m};
 
     int* cache_buff = new int[n];
+
+    if (cache_buff == nullptr) {
+        std::cout << "Problem with memory allocation" << std::endl;
+        return 1;
+    }
 
     for (int i = 0; i < n; i++) {
         std::cin >> cache_buff[i]; 
     }
 
-    int total_hits = 0;
+    unsigned int end_preparation = clock ();
+
+    perfect_cache_t<int, int> perfecto{cache_buff, m, n};
+
+    fprintf (logs, "Perfect cache: %lu\n", perfecto.count_hits()); 
+
+    unsigned int end_perfect_cache = clock ();
+
+    size_t total_hits = 0;
 
     for (int i = 0; i < n; i++) {
         total_hits += c.lookup_update (cache_buff[i], slow_get_page);
-        // printf ("%d\n", total_hits);
     }
 
-    std::cout << "Total hits " << total_hits << std::endl; 
+    fprintf (logs, "LFU-cache: %lu\n", total_hits);
+
+    unsigned int end_lfu = clock ();
 
     delete[] cache_buff;
+
+    unsigned int end_time = clock();
+
+    float search_time_perfect_cache = (float) (end_perfect_cache - start_preparation + end_time - end_lfu) / ((float) CLOCKS_PER_SEC);
+    float search_time_lfu_cache     = (float) (end_preparation - start_preparation + end_time - end_perfect_cache) / ((float) CLOCKS_PER_SEC);
+
+    fprintf (logs, "Time for perfect cache %f\n", search_time_perfect_cache);
+    fprintf (logs, "Time for LFU cache %f\n", search_time_lfu_cache);
+    fprintf (logs, "==============================================\n\n");
+    fclose (logs);
 
     return 0;
 }

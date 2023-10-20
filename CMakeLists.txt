@@ -5,8 +5,8 @@ project (cache)
 set (CMAKE_CXX_STANDARD 20)
 
 set (SOURCES src/main.cpp)
-set (HEADERS include/lfu_cache.hpp)
+set (HEADERS include/lfu_cache.hpp include/perfect_cache.hpp)
 
 include_directories(include/)
 
-add_executable (main include/lfu_cache.hpp src/main.cpp)
+add_executable (main src/main.cpp include/lfu_cache.hpp include/perfect_cache.hpp)
