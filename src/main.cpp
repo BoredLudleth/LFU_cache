@@ -5,14 +5,9 @@
 #include <string>
 
 int main () {
-    std::string test_head;
-    std::cin >> test_head;
     FILE* logs = fopen ("../logs/log1.txt", "a+");
 
     fprintf (logs, "==============================================\n");
-    fprintf (logs, (test_head + "\n").c_str());
-
-
 
     unsigned int start_preparation = clock ();
     size_t m;          //size
