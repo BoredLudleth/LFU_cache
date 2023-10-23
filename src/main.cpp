@@ -3,12 +3,10 @@
 
 #include <time.h>
 #include <fstream>
+#include <string>
 
 int main () {
-    std::ofstream fout;
-    fout.open("../logs/log1.txt"); 
-
-    fout << "==============================================" << std::endl;
+    std::cout << "==============================================" << std::endl;
 
     unsigned int start_preparation = clock ();
     size_t m;          //size
@@ -32,7 +30,7 @@ int main () {
 
     perfect_cache_t<int, int> perfecto{cache_buff, m, n};
 
-    fout << "Perfect cache: " << perfecto.count_hits() << " hits" << std::endl; 
+    std::cout << "Perfect cache: " << perfecto.count_hits() << " hits" << std::endl; 
 
     unsigned int end_perfect_cache = clock ();
 
@@ -42,7 +40,7 @@ int main () {
         total_hits += c.lookup_update (cache_buff[i], slow_get_page);
     }
 
-    fout << "LFU-cache: " << total_hits << " hits" << std::endl;
+    std::cout << "LFU-cache: " << total_hits << " hits" << std::endl;
 
     unsigned int end_lfu = clock ();
 
@@ -53,11 +51,9 @@ int main () {
     float search_time_perfect_cache = (float) (end_perfect_cache - start_preparation + end_time - end_lfu) / ((float) CLOCKS_PER_SEC);
     float search_time_lfu_cache     = (float) (end_preparation - start_preparation + end_time - end_perfect_cache) / ((float) CLOCKS_PER_SEC);
 
-    fout << "Time for perfect cache " << search_time_perfect_cache << " sec"<< std::endl;
-    fout << "Time for LFU cache " << search_time_lfu_cache << " sec" << std::endl;
-    fout << "==============================================" << std::endl;
-
-    fout.close();
+    std::cout << "Time for perfect cache " << search_time_perfect_cache << " sec"<< std::endl;
+    std::cout << "Time for LFU cache " << search_time_lfu_cache << " sec" << std::endl;
+    std::cout << "==============================================" << std::endl;
 
     return 0;
 }

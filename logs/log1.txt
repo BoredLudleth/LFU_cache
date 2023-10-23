@@ -1,6 +1,6 @@
 ==============================================
-Perfect cache: 3928 hits
-LFU-cache: 174 hits
-Time for perfect cache 0.004503 sec
-Time for LFU cache 2.62341 sec
+Perfect cache: 4 hits
+LFU-cache: 4 hits
+Time for perfect cache 6.2e-05 sec
+Time for LFU cache 5.7e-05 sec
 ==============================================
