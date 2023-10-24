@@ -17,21 +17,30 @@ class perfect_cache_t {
         size_t length_dataset_;
         size_t currentPage;
 
-        std::list<PageT> cache_;
-
-        using ListIt = typename std::list<PageT>::iterator;
-        std::unordered_map <KeyT, ListIt> hash_;
+        std::unordered_map <KeyT, PageT> hash_;
         int* prediction_;
 
         bool full() const {return (elem_amount == sz_);}
 
-        auto far_entry (int* prediction_, std::unordered_map<KeyT, ListIt> hash_) const {
+        auto far_entry (int* prediction_, std::unordered_map<KeyT, PageT> hash_) const {
             auto it = hash_.begin();
             auto result = it;
             size_t length_to_farrest = 0;
 
             if (currentPage + 1 == length_dataset_ - 1) {
                 return it;
+            }
+
+            int current_key_len = 0;
+            for (int i = currentPage + 1 ; i < length_dataset_; i++) {
+                    if (prediction_[currentPage] == prediction_[i]) {
+                        current_key_len = i - currentPage;
+                        break;
+                    }
+            }
+            
+            if (current_key_len == 0) {
+                return hash_.end();
             }
 
             for (it = hash_.begin(); it != hash_.end(); ++it) {
@@ -50,25 +59,21 @@ class perfect_cache_t {
                     length_to_farrest = current_length;
                     result = it;
                 }
+
+                if (current_length < current_key_len) {
+                    return hash_.end();
+                }
             }
 
             return result;
         }
 
-        void output_hash () {
+        void output_hash () const {
             for (auto it = hash_.begin(); it != hash_.end(); ++it) {
                 std::cout << it->first << " ";
             }
             std::cout << std::endl;
 
-        }
-
-        void output_list () {
-            std::cout << "LIST:";
-            for (const auto& elem: cache_) {
-                std::cout << elem << " ";
-            }
-            std::cout << std::endl;
         }
 
     public:
@@ -80,24 +85,30 @@ class perfect_cache_t {
 
             if (it == hash_.end()) {
                 if (full ()) {
-                    auto farrest_entry = far_entry(prediction_, hash_)->first;
-                    auto it_list = hash_[farrest_entry];
+                    auto farrest_or_not = far_entry(prediction_, hash_);
 
-                    cache_.erase (it_list);
+                    if (farrest_or_not == hash_.end()) {
+                        currentPage++;
+                        return false;
+                    }
+
+                    auto farrest_entry = farrest_or_not->first;
+                    
+
                     hash_.erase (farrest_entry);
 
                     elem_amount--;
                 }
 
                 elem_amount++;
-                cache_.push_front (slow_get_page(key));
-                hash_[key] = cache_.begin();
+
+                hash_[key] = slow_get_page(key);
                 currentPage++;
 
                 return false;
             } else {
                 currentPage++;
-
+                // std::cout << "hit\n";
                 return true;
             }
         }
@@ -108,6 +119,7 @@ class perfect_cache_t {
 
             for (int i = 0; i < length_dataset_; i++) {
                 total_hits += lookup_update (prediction_[i], slow_get_page);
+                // output_hash();
             }
 
             return total_hits;
