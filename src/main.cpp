@@ -30,7 +30,12 @@ int main () {
 
     perfect_cache_t<int, int> perfecto{cache_buff, m, n};
 
-    std::cout << "Perfect cache: " << perfecto.count_hits() << " hits" << std::endl; 
+    size_t total_perfect_hits = 0;
+    for (int i = 0; i < n; i++) {
+        total_perfect_hits += perfecto.lookup_update (cache_buff[i], slow_get_page);
+    }
+
+    std::cout << "Perfect cache: " << total_perfect_hits << " hits" << std::endl; 
 
     unsigned int end_perfect_cache = clock ();
 

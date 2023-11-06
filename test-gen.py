@@ -1,9 +1,9 @@
 import random
 
-file = open ('test11.txt', 'w')
+file = open ('test13.txt', 'w')
 
-n = random.randint(1,100)
-m = random.randint(100, 10000)
+n = random.randint(15000,20000)
+m = random.randint(150000, 200000)
 
 file.write (str(n) + '\n')
 file.write (str(m)+'\n')
